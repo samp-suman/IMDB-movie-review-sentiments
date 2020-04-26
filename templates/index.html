@@ -46,9 +46,11 @@
         {%if flag==-1%}
             <h4 style="color:red;">Note Found! <br> Try something else..</h4>
         {%endif%}
+        </form>
 
 
         {%if shape%}
+        <form action="{{ url_for('predict')}}" method="POST">
         <br/>
         <h3>Enter IMDB-ID from table below</h3>
         <input name="title-id" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter IMDB-ID">
