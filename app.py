@@ -47,13 +47,13 @@ def sentiments(movie_id,word_list):
     sample = []
     review_return=[]
     for item in reviews:
-        review = item.find('div', class_='content').text.lower().split()
+        review = item.find('div', class_='text show-more__control').text.lower().split()
         feature=[]
         for i in word_list:
             feature.append(review.count(i[0]))
         j += 1
         sample.append(feature)
-        review_return.append(item.find('div',class_='content').text[:300])
+        review_return.append(item.find('div',class_='text show-more__control').text[:300])
     return np.array(sample), review_return, title
 
 
