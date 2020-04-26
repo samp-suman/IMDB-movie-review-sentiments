@@ -13,6 +13,11 @@
         div.prediction-item {
                 padding: 5px 50px 5px 50px;
                     }
+        table, th, td {
+  border: 2px solid black;
+  padding:5px 5px 5px 5px;
+  margin:5px 5px 5px 5px;
+}
     </style>
 </head>
 <body
@@ -33,35 +38,63 @@
 
     <form action="{{ url_for('predict')}}" method="POST">
 
-        <input name="message" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter Movie imdb_id">
+        <input name="message" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter Movie title">
 
         <br/>
 
         <button type="submit" class="btn btn-success">Predict</button>
+        {%if flag==-1%}
+            <h4 style="color:red;">Note Found! <br> Try something else..</h4>
+        {%endif%}
 
+
+        {%if shape%}
+        <br/>
+        <h3>Enter IMDB-ID from table below</h3>
+        <input name="title-id" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter IMDB-ID">
+        <br/>
+        <button type="submit" class="btn btn-success">Predict</button>
+        <br>
+
+        <table>
+              <tr>
+                <th>IMDB-ID</th>
+                <th>TITLE</th>
+                <th>YEAR of Release</th>
+              </tr>
+            {%for detail in details %}
+              <tr>
+                <td>{{detail[0]}}</td>
+                <td>{{detail[1].swapcase()}}</td>
+                <td>{{detail[2]}}</td>
+              </tr>
+            {% endfor %}
+        </table>
+    {%endif%}
     </form>
-    <br>
+    {%if title%}
     <div class="title-heading">
         <h3 style="">{{title}}</h3>
+        <h4>{{imdb_id}}</h4>
     </div>
+    {%endif%}
     <div class="prediction-list">
-    {% for i in prediction%}
-        <div class="prediction-item">
-        {%if i[0]=='1'%}
-            <div class="positive review">
-                <p style="background-color:green;color:white;"> {{i[1]}} </p>
+        <br>
+    {% if prediction%}
+        {% for i in prediction%}
+            <div class="prediction-item">
+            {%if i[0]=='1'%}
+                <div class="positive review">
+                    <p style="background-color:green;color:white;"> {{i[1]}} </p>
+                </div>
+            {%elif i[0]=='0'%}
+                <div class="negative review">
+                    <p style="background-color:red;color:white;"> {{i[1]}} </p>
+                </div>
+            {%endif%}
             </div>
-
-<!--            <p class="positive sentiment" style="color:green; text-align:left;"> Positive </p>-->
-
-        {%elif i[0]=='0'%}
-<!--            <p class="negative sentiment" style="color:red; text-align:left;"> {{i[0]}} </p>-->
-            <div class="negative review">
-                <p style="background-color:red;color:white;"> {{i[1]}} </p>
-            </div>
-        {%endif%}
-        </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
     </div>
 
 
