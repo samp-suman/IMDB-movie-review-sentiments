@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SMS Spam Classifier</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <style>
+        div.prediction-item {
+                padding: 5px 50px 5px 50px;
+                    }
+    </style>
+</head>
+<body
+    style = "
+            display: flex;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            background: #b6f3e4;
+            " >
+
+    <h1 style="color: blue;padding: 20px;">IMDB Movie Reviews Sentiment</h1>
+    <br>
+
+    <form action="{{ url_for('predict')}}" method="POST">
+
+        <input name="message" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter Movie imdb_id">
+
+        <br/>
+
+        <button type="submit" class="btn btn-success">Predict</button>
+
+    </form>
+    <br>
+    <div class="title-heading">
+        <h3 style="">{{title}}</h3>
+    </div>
+    <div class="prediction-list">
+    {% for i in prediction%}
+        <div class="prediction-item">
+        {%if i[0]=='1'%}
+            <div class="positive review">
+                <p style="background-color:green;color:white;"> {{i[1]}} </p>
+            </div>
+
+<!--            <p class="positive sentiment" style="color:green; text-align:left;"> Positive </p>-->
+
+        {%elif i[0]=='0'%}
+<!--            <p class="negative sentiment" style="color:red; text-align:left;"> {{i[0]}} </p>-->
+            <div class="negative review">
+                <p style="background-color:red;color:white;"> {{i[1]}} </p>
+            </div>
+        {%endif%}
+        </div>
+    {% endfor %}
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+</body>
+</html>
