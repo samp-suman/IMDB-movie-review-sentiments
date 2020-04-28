@@ -4,20 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
     <title>SMS Spam Classifier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
     <style>
-        div.prediction-item {
-                padding: 5px 50px 5px 50px;
+            .checked {
+                    font-size: 50px;
+                    color: orange;
                     }
+
+
+
+        div.prediction-item {
+                            padding: 5px 50px 5px 50px;
+                           }
+        div.rating-wraper{
+                position: absolute;
+                float:left;
+                  left: 10%;
+                  width: 300px;
+                  padding: 10px;
+                        }
+
+        div.sentiment{
+                  position: absolute;
+
+                  right: 10%;
+                  width: 300px;
+                  padding: 10px;
+
+        }
+
         table, th, td {
-  border: 2px solid black;
-  padding:5px 5px 5px 5px;
-  margin:5px 5px 5px 5px;
-}
+                        border: 2px solid black;
+                        padding:5px 5px 5px 5px;
+                        margin:5px 5px 5px 5px;
+                     }
+<!--        Footer styles-->
+                    .site-footer
+            {
+              background-color:#26272b;
+              padding:45px 0 20px;
+              font-size:15px;
+              line-height:24px;
+              color:#737373;
+            }
+            .site-footer hr
+            {
+              width=100%;
+              border-top-color:#bbb;
+              opacity:0.5
+            }
+            .site-footer hr.small
+            {
+              margin:20px 0
+            }
+            .site-footer h6
+            {
+              color:#fff;
+              font-size:16px;
+              text-transform:uppercase;
+              margin-top:5px;
+              letter-spacing:2px
+            }
+            .site-footer a
+            {
+              color:#737373;
+            }
+            .site-footer a:hover
+            {
+              color:#3366cc;
+              text-decoration:none;
+            }
+            .footer-links
+            {
+              padding-left:0;
+              list-style:none
+            }
+            .footer-links li
+            {
+              display:block
+            }
+            .footer-links a
+            {
+              color:#737373
+            }
+            .footer-links a:active,.footer-links a:focus,.footer-links a:hover
+            {
+              color:#3366cc;
+              text-decoration:none;
+            }
+            .footer-links.inline li
+            {
+              display:inline-block
+            }
+            .site-footer .social-icons
+            {
+              text-align:right
+            }
+            .site-footer .social-icons a
+            {
+              width:40px;
+              height:40px;
+              line-height:40px;
+              margin-left:6px;
+              margin-right:0;
+              border-radius:100%;
+              background-color:#33353d
+            }
+            .copyright-text
+            {
+              margin:0
+            }
+            @media (max-width:991px)
+            {
+              .site-footer [class^=col-]
+              {
+                margin-bottom:30px
+              }
+            }
+            @media (max-width:767px)
+            {
+              .site-footer
+              {
+                padding-bottom:0
+              }
+              .site-footer .copyright-text,.site-footer .social-icons
+              {
+                text-align:center
+              }
+            }
+            .social-icons
+            {
+              padding-left:0;
+              margin-bottom:0;
+              list-style:none
+            }
+            .social-icons li
+            {
+              display:inline-block;
+              margin-bottom:4px
+            }
+            .social-icons li.title
+            {
+              margin-right:15px;
+              text-transform:uppercase;
+              color:#96a2b2;
+              font-weight:700;
+              font-size:13px
+            }
+            .social-icons a{
+              background-color:#eceeef;
+              color:#818a91;
+              font-size:16px;
+              display:inline-block;
+              line-height:44px;
+              width:44px;
+              height:44px;
+              text-align:center;
+              margin-right:8px;
+              border-radius:100%;
+              -webkit-transition:all .2s linear;
+              -o-transition:all .2s linear;
+              transition:all .2s linear
+            }
+            .social-icons a:active,.social-icons a:focus,.social-icons a:hover
+            {
+              color:#fff;
+              background-color:#29aafe
+            }
+            .social-icons.size-sm a
+            {
+              line-height:34px;
+              height:34px;
+              width:34px;
+              font-size:14px
+            }
+            .social-icons a.facebook:hover
+            {
+              background-color:#3b5998
+            }
+            .social-icons a.twitter:hover
+            {
+              background-color:#00aced
+            }
+            .social-icons a.linkedin:hover
+            {
+              background-color:#007bb6
+            }
+            .social-icons a.dribbble:hover
+            {
+              background-color:#ea4c89
+            }
+            @media (max-width:767px)
+            {
+              .social-icons li.title
+              {
+                display:block;
+                margin-right:0;
+                font-weight:600
+              }
+            }
+
     </style>
 </head>
 <body
@@ -32,32 +224,37 @@
             text-align: center;
             background: #b6f3e4;
             " >
+    <div class="page-title">
 
-    <h1 style="color: blue;padding: 20px;">IMDB Movie Reviews Sentiment</h1>
+        <h1 style="color: blue;padding: 20px; font-size:5vw;">IMDB Movie Reviews Sentiment</h1>
+    </div>
     <br>
-
-    <form action="{{ url_for('predict')}}" method="POST">
+    <div class="searchByTitle">
+        <form action="{{ url_for('predict')}}" method="POST">
 
         <input name="message" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter Movie title">
 
         <br/>
 
-        <button type="submit" class="btn btn-success">Predict</button>
+        <button type="submit" class="btn btn-success">Search</button>
         {%if flag==-1%}
             <h4 style="color:red;">Note Found! <br> Try something else..</h4>
         {%endif%}
         </form>
-
-
-        {%if shape%}
+    </div>
+    <div class="">
+    {%if shape%}
+        <div class="search-id">
         <form action="{{ url_for('predict')}}" method="POST">
         <br/>
-        <h3>Enter IMDB-ID from table below</h3>
+        <h3>Enter IMDB-ID from the table below <br> or click on title</h3>
         <input name="title-id" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter IMDB-ID">
         <br/>
-        <button type="submit" class="btn btn-success">Predict</button>
+        <button type="submit" class="btn btn-success">Search</button>
         <br>
-
+        </form>
+    </div>
+        <div class="movie-table">
         <table>
               <tr>
                 <th>IMDB-ID</th>
@@ -66,38 +263,159 @@
               </tr>
             {%for detail in details %}
               <tr>
-                <td>{{detail[0]}}</td>
-                <td>{{detail[1].swapcase()}}</td>
-                <td>{{detail[2]}}</td>
+                <form action="{{ url_for('predict')}}" method="POST">
+                    <td>
+                        <button class="btn" name="title-id" type="submit" value="{{detail[0]}}">{{detail[0]}}</button>
+                    </td>
+
+                    <td>
+                        <button class="btn" name="title-id" type="submit" value="{{detail[0]}}">{{detail[1].swapcase()}}</button>
+                    </td>
+                    <td>{{detail[2]}}</td>
+
+                </form>
               </tr>
             {% endfor %}
         </table>
-    {%endif%}
-    </form>
-    {%if title%}
-    <div class="title-heading">
-        <h3 style="">{{title}}</h3>
-        <h4>{{imdb_id}}</h4>
     </div>
     {%endif%}
-    <div class="prediction-list">
-        <br>
-    {% if prediction%}
-        {% for i in prediction%}
-            <div class="prediction-item">
-            {%if i[0]=='1'%}
-                <div class="positive review">
-                    <p style="background-color:green;color:white;"> {{i[1]}} </p>
+    </div>
+
+
+    <div class="title-block">
+        {%if flag==1 or flag==-3%}
+        <div class="title-bar-wraper">
+            <div class="rating-wraper">
+                <div class="rating-star">
+                    <span class="fa fa-star checked"></span>
                 </div>
-            {%elif i[0]=='0'%}
-                <div class="negative review">
-                    <p style="background-color:red;color:white;"> {{i[1]}} </p>
-                </div>
-            {%endif%}
+                    <div class="ratingValue">
+                        <strong title="{{movie[4]}} user ratings">
+                            <span itemprop="ratingValue">{{movie[4]}}</span>
+                        </strong>
+                        <span class="grey">/</span>
+                        <span class="grey" itemprop="bestRating">10</span>
+                    </div>
             </div>
-        {% endfor %}
-    {% endif %}
+            {%if prediction%}
+            <div class="wrapper">
+                  <div class="sentiment">
+                      {%if prediction<=4 %}
+                      <i class='fas fa-frown-open' style='font-size:48px;color:red;'></i>
+                      {%elif prediction<=6 %}
+                      <i class='fas fa-meh' style='font-size:48px;color:orange;'></i>
+                      {%else%}
+                      <i class='fas fa-grin' style='font-size:48px;color:green;'></i>
+                      {%endif%}
+                      <div>
+                        <span class="sentiment-score" style="font-weight:bold;">{{prediction}}</span>
+                      </div>
+                  </div>
+            </div>
+            {%endif%}
+
+
+            <div class="title_wrapper">
+                    <h1 class="title">{{movie[0]}} </h1>
+
+                    <time datetime="PT110M">
+                        {{movie[1]}}
+                    </time>
+                    <span class="ghost">|</span>
+                        {{movie[3]}}
+                    <span class="ghost">|</span>
+                    {{movie[2]}}
+                </div>
+        </div>
+        <div style="height: 7px;display: block;background:grey;flex-direction: row">
+            <hr style="">
+
+        </div>
+
+        <div class="poster">
+            <img src={{movie[5]}}
+            style="height: 300px;border:1px solid grey; margin: 2px 2px 2px 2px;padding:2px 2px 2px 2px;">
+        </div>
+        {%endif%}
     </div>
+
+
+
+    {%if reviews %}
+    <div class="review-list" style="margin: 10px 20px 30px 20px;border:5px solid #73AD51;padding:10px 20px 10px 20px;">
+        <div style="font-size:30px;font-weight:bold;font-family:sans;text-align:centre;border:2px solid grey;">REVIEWS</div>
+        {%for review in reviews%}
+        <div class="review-container" style="margin: 10px 5px 15px 20px;">
+            <div class="review-wraper">
+                {%if review[1]%}
+                <div class="rating-star" style="align-items: right;">
+
+                    <span class="fa fa-star review-checked " style="color:orange;"></span>
+                    <span style="font-weight:bold;">{{review[1]}}</span>
+                    <span class="point-scale">/10</span>
+                </div>
+                {%endif%}
+                {%if review[3]%}
+                <div class="review-title" style="align-items: center; font-weight:bold;">
+                    <span>{{review[3]}}</span>
+                </div>
+                {%endif%}
+
+                <div class="display-name" style="align-items: left; font-weight:bold;color:grey;">
+                    <span>by: {{review[2]}}</span>
+                </div>
+
+
+                <div class="content" style="text=align:left;">
+                    {%if review[5]=='1'%}
+                    <p style="color:green;">
+                        {{review[4]}}
+                    </p>
+                    {%elif review[5]=='0'%}
+                    <p style="color:red; ">
+                        {{review[4]}}
+                    </p>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+    {%endif%}
+
+    {%if flag==-3%}
+        <h3>No reviews to show!</h3>
+    {%endif%}
+
+
+
+      <!-- Site footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <hr style="">
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved by
+         <a href="#">SquareLearn</a>.
+            </p>
+          </div>
+          <div class="col-md-4 col-sm-6 col-xs-12 icon"><img src="icon.jpeg" style="height:20px;width=20px;">
+
+          </div>
+
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <ul class="social-icons">
+              <li><a class="facebook" href="mailto:campusx19@gmail.com?Subject=Hello%20again"><i class="fa fa-envelope-o"></i></a></li>
+              <li><a class="twitter" href="https://www.kaggle.com/sampsuman"><i class="fab fa-kaggle"></i></a></li>
+              <li><a class="dribbble" href="https://github.com/samp-suman"><i class="fa fa-git"></i></a></li>
+              <li><a class="linkedin" href="https://www.linkedin.com/in/samp-suman/"><i class="fa fa-linkedin"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
 
     <!-- Optional JavaScript -->
@@ -105,6 +423,24 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script>
+        function myFunction(r_id) {
+          var dots = document.getElementById("dots");
+          var moreText = document.getElementById("more");
+          var btnText = document.getElementById("myBtn");
+
+          if (dots.style.display === "none") {
+            dots.style.display = "inline";
+            btnText.innerHTML = "Read more";
+            moreText.style.display = "none";
+          } else {
+            dots.style.display = "none";
+            btnText.innerHTML = "Read less";
+            moreText.style.display = "inline";
+          }
+        }
+    </script>
+
 
 </body>
 </html>

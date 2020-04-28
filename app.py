@@ -22,74 +22,148 @@ def home():
 
 @app.route('/predict',methods=['POST'])
 def predict():
-    return_element = None
-    movieTitle = None
+    reviews_data = None
     movie_details = None
+    movies_details = None
     details_shape=None
-    flag=None
+    predict_list=None
+    sentiment=0
+    flag=0
 
     movie_title = request.form.get('message')
     movie_id = request.form.get('title-id')
 
     if movie_title:
         movie_ids = getId(movie_title.lower())
-
         if movie_ids.shape[0]>1:
-            movie_details=getDetails(movie_ids)
-            details_shape=movie_details.shape[0]
+            flag=-2
+            movies_details = getDetails(movie_ids)
+            details_shape = movies_details.shape[0]
         if movie_ids.shape[0]==1:
             movie_id=movie_ids[0]
         if movie_ids.shape[0] == 0:
             flag=-1
     if movie_id :
-        sample_list, review_text, movieTitle = fetchData(movie_id)
-        predict_list=getPrediction(sample_list)
-        return_element=zip(predict_list,review_text)
-    return render_template('index.html',prediction=return_element,title=movieTitle,details=movie_details,shape=details_shape,flag=flag)
+        review_detail = getReview(movie_id)
+        if review_detail is None:
+            flag=-1
+        else:
+            movie_details=getMovieDetails(movie_id)
+            predict_list, reviews_data = getPrediction(review_detail)
+            try:
+                sentiment=round(sum(predict_list)/len(predict_list)*10,2)
+                flag = 1
+            except:
+                flag =-3
+                sentiment=0
+            #review_detail.append(predict_list)
+
+            print(review_detail[0:3])
+    return render_template('index.html',prediction=sentiment,reviews=reviews_data,movie=movie_details,details=movies_details,shape=details_shape,flag=flag)
 
 
 
 
 def getId(title):
     movie_ids=imdb_data[(imdb_data['title'].str.contains(title))|(imdb_data['original_title'].str.contains(title))]['imdb_title_id'].values
-    print(movie_ids)
+    # print(movie_ids)
     # if movie_ids.shape[0]==0:
     #     movie_ids=None
     return movie_ids
 
 
-def getPrediction(samples):
+def getPrediction(reviews):
     predict_list = []
-    for sample in samples:
-        sampl = np.array(sample).reshape(1, 5000)
-        x = clf.predict(sampl)[0]
-        predict_list.append(str(x))
-    return predict_list
-
-
-
-def fetchData(imdbId):
-    url = "https://www.imdb.com/title/{}/reviews?ref_=tt_ql_3".format(imdbId)
-    page = requests.get(url, headers=headers)
-    raw = soup(page.content, 'html.parser')
-    reviews = raw.find_all('div', class_='imdb-user-review')
-    movieTitle = raw.find_all('div', class_='subpage_title_block')[0].find('h3').text
-    j = 0
-    sample = []
-    review_return = []
     for item in reviews:
-        review = item.find('div', class_='text show-more__control').text.lower().split()
+        review = item[4].lower().split()
         feature = []
         for i in word_list:
             feature.append(review.count(i[0]))
-        j += 1
-        sample.append(feature)
-        review_return.append(item.find('div', class_='text show-more__control').text[:300])
+        sample = np.array(feature).reshape(1, 5000)
+        x = clf.predict(sample)[0]
+        predict_list.append(x)
+        reviews[item[0]].append(str(x))
+    return predict_list,reviews
 
-    return np.array(sample), review_return, movieTitle
+
+def getReview(imdb_id):
+    url = "https://www.imdb.com/title/{}/reviews/_ajax".format(imdb_id)
+    page = requests.get(url, headers=headers)
+    if page.status_code==404:
+        return None
+    raw = soup(page.content, 'html')
+    reviews = raw.find_all('div', class_='imdb-user-review')
+    review_return = []
+    ids = 0
+    for item in reviews:
+
+        # rating for the movie by this user
+        try:
+            rating = item.find('span', class_='rating-other-user-rating').span.text
+        except:
+            rating = None
+            # User who has posted this review
+        try:
+            user = item.find('span', class_='display-name-link').text
+        except:
+            user = None
+        # Review title-
+        try:
+            review_title = item.find('a', class_='title').text
+        except:
+            review_title = None
+        # Review text
+        review = item.find('div', class_='text show-more__control').text
+
+        review_return.append([ids, rating, user, review_title, review])
+        # review id- for convenience
+        ids += 1
+
+    return review_return
+
+
+def getMovieDetails(imdb_id):
+    url = "https://www.imdb.com/title/{}/".format(imdb_id)
+    page = requests.get(url, headers=headers)
+    if page.status_code==404:
+        return None
+    raw = soup(page.content, 'html.parser')
+    title_year = raw.find('div', class_='title_wrapper').h1.text
+    try:
+        run_time = raw.find('div', class_='subtext').time.text
+    except:
+        run_time = None
+    try:
+        released_date = raw.find('div', class_='subtext').find('a', title='See more release dates').text
+    except:
+        released_date = None
+    try:
+        genre = '  '
+        for i in raw.find('div', class_='subtext').find_all('a')[:-1]:
+            genre += i.text + ',  '
+    except:
+        genre = None
+
+    try:
+        released_date = raw.find('div', class_='subtext').find_all('a')[-1].text[:-2]
+
+    except:
+        release_date = None
+
+    try:
+        poster_link = raw.find('div', class_='poster').img.get('src')
+    except:
+        poster_link = None
+    try:
+        rating = raw.find('span', itemprop="ratingValue").text
+    except:
+        rating = None
+    details = [title_year, run_time, released_date, genre, rating, poster_link]
+    return details
+
 
 def getDetails(ids):
-    details=imdb_data[imdb_data['imdb_title_id'].isin(ids)][['imdb_title_id','title','year']].values
+    details = imdb_data[imdb_data['imdb_title_id'].isin(ids)][['imdb_title_id','title','year']].values
     return details
 
 if __name__ == "__main__":
