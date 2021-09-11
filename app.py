@@ -129,11 +129,11 @@ def getMovieDetails(imdb_id):
     if page.status_code == 404:
         return None
     raw = soup(page.content, 'html.parser')
-    title = raw.find('h1', class_='dxSWFG').text
-    try:
-        run_time = raw.find_all('li', role="presentation")[1].text
-    except:
-        run_time = None
+    title = raw.find('h1').text
+    # try:
+    #     run_time = raw.find_all('li', role="presentation")[1].text
+    # except:
+    #     run_time = None
 
     try:
         released_year = raw.find('span', class_='jedhex').text
@@ -141,19 +141,23 @@ def getMovieDetails(imdb_id):
         released_year = None
     try:
         genre = '  '
-        for i in raw.find('div', class_='dMcpOf').find_all('a'):
+        for i in raw.find('div', class_='ipc-chip-list').find_all('a'):
             genre += i.text + ',  '
     except:
         genre = None
     try:
-        poster_link = "imdb.com"+raw.find('a', class_="ipc-focusable")['href']
+        poster_link = "https://www.imdb.com/" + \
+            raw.find('a', class_="ipc-focusable")['href']
     except:
         poster_link = None
     try:
         rating = raw.find('span', class_="iTLWoV").text
     except:
         rating = None
-    details = [title, run_time, released_year, genre, rating, poster_link]
+
+    details = [title, released_year, genre, rating, poster_link]
+    print(details)
+    return details
 
 
 def getDetails(ids):
