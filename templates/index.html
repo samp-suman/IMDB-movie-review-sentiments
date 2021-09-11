@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
         <title>IMDB Movie Review Sentiments</title>
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -72,8 +72,7 @@
 
                 <input name="message" type="text" class="form-control"
                     aria-label="Sizing example input"
-                    aria-describedby="inputGroup-sizing-lg" placeholder="Enter
-                    Movie title">
+                    aria-describedby="inputGroup-sizing-lg" placeholder="Ente Movie title">
 
                 <br/>
 
@@ -150,12 +149,12 @@
                             {%if prediction%}
                             <div class="wrapper">
                                 <div class="sentiment">
-                                    {%if prediction<=4 %}
+                                    {%if prediction<5 %}
                                     <i class='fas fa-frown-open'
-                                        style='font-size:48px;color: red;'></i>
-                                    {%elif prediction<=6 %}
+                                        style='font-size:48px;color:red;'></i>
+                                    {%elif prediction<7 %}
                                     <i class='fas fa-meh'
-                                        style='font-size:48px;color: orange;'></i>
+                                        style='font-size:48px;color:orange;'></i>
                                     {%else%}
                                     <i class='fas fa-grin'
                                         style='font-size:48px;color:green;'></i>
