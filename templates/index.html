@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
-    <title>IMDB Movie Review Sentiments</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+        <title>IMDB Movie Review Sentiments</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static',
+            filename='favicon.ico') }}" />
+        <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+            integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+            crossorigin="anonymous">
 
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-
-    <style>
+        <style>
             .checked {
                     font-size: 50px;
                     color: orange;
@@ -46,194 +50,232 @@
                      }
 
     </style>
-</head>
-<body
-    style = "
-            display: flex;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-            background: #b6f3e4;
-            " >
-    <div class="page-title">
+    </head>
+    <body
+        style="display: flex;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        background: #b6f3e4;">
+        <div class="page-title">
 
-        <h1 style="color: blue;padding: 20px; font-size:5vw;">IMDB Movie Reviews Sentiment</h1>
-    </div>
-    <br>
-    <div class="searchByTitle">
-        <form action="{{ url_for('predict')}}" method="POST">
-
-        <input name="message" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter Movie title">
-
-        <br/>
-
-        <button type="submit" class="btn btn-success">Search</button>
-        {%if flag==-1%}
-            <h4 style="color:red;">Not Found! <br> Try something else..</h4>
-        {%endif%}
-        </form>
-    </div>
-    <div class="">
-    {%if shape%}
-        <div class="search-id">
-        <form action="{{ url_for('predict')}}" method="POST">
-        <br/>
-        <h3>Enter IMDB-ID from the table below <br> or click on title</h3>
-        <input name="title-id" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" placeholder="Enter IMDB-ID">
-        <br/>
-        <button type="submit" class="btn btn-success">Search</button>
+            <h1 style="color: blue;padding: 20px; font-size:5vw;">IMDB Movie
+                Reviews Sentiment</h1>
+        </div>
         <br>
-        </form>
-    </div>
-        <div class="movie-table">
-        <table>
-              <tr>
-                <th>IMDB-ID</th>
-                <th>TITLE</th>
-                <th>YEAR of Release</th>
-              </tr>
-            {%for detail in details %}
-              <tr>
-                <form action="{{ url_for('predict')}}" method="POST">
-                    <td>
-                        <button class="btn" name="title-id" type="submit" value="{{detail[0]}}">{{detail[0]}}</button>
-                    </td>
+        <div class="searchByTitle">
+            <form action="{{ url_for('predict')}}" method="POST">
 
-                    <td>
-                        <button class="btn" name="title-id" type="submit" value="{{detail[0]}}">{{detail[1].swapcase()}}</button>
-                    </td>
-                    <td>{{detail[2]}}</td>
+                <input name="message" type="text" class="form-control"
+                    aria-label="Sizing example input"
+                    aria-describedby="inputGroup-sizing-lg" placeholder="Enter
+                    Movie title">
 
-                </form>
-              </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {%endif%}
-    </div>
+                <br/>
 
-
-    <div class="title-block">
-        {%if flag==1 or flag==-3%}
-        <div class="title-bar-wraper">
-            <div class="rating-wraper">
-                <div class="rating-star">
-                    <span class="fa fa-star checked"></span>
-                </div>
-                    <div class="ratingValue">
-                        <strong title="{{movie[4]}} user ratings">
-                            <span itemprop="ratingValue">{{movie[4]}}</span>
-                        </strong>
-                        <span class="grey">/</span>
-                        <span class="grey" itemprop="bestRating">10</span>
-                    </div>
-            </div>
-            {%if prediction%}
-            <div class="wrapper">
-                  <div class="sentiment">
-                      {%if prediction<=4 %}
-                      <i class='fas fa-frown-open' style='font-size:48px;color:red;'></i>
-                      {%elif prediction<=6 %}
-                      <i class='fas fa-meh' style='font-size:48px;color:orange;'></i>
-                      {%else%}
-                      <i class='fas fa-grin' style='font-size:48px;color:green;'></i>
-                      {%endif%}
-                      <div>
-                        <span class="sentiment-score" style="font-weight:bold;">{{prediction}}</span>
-                      </div>
-                  </div>
-            </div>
-            {%endif%}
-
-
-            <div class="title_wrapper">
-                    <h1 class="title">{{movie[0]}} </h1>
-
-                    <time datetime="PT110M">
-                        {{movie[1]}}
-                    </time>
-                    <span class="ghost">|</span>
-                        {{movie[3]}}
-                    <span class="ghost">|</span>
-                    {{movie[2]}}
-                </div>
-        </div>
-        <div style="height: 7px;display: block;background:grey;flex-direction: row">
-            <hr style="">
-
-        </div>
-
-        <div class="poster">
-            <img src={{movie[5]}}
-            style="height: 300px;border:1px solid grey; margin: 2px 2px 2px 2px;padding:2px 2px 2px 2px;">
-        </div>
-        {%endif%}
-    </div>
-
-
-
-    {%if reviews %}
-    <div class="review-list" style="margin: 10px 20px 30px 20px;border:5px solid #73AD51;padding:10px 20px 10px 20px;">
-        <div style="font-size:30px;font-weight:bold;font-family:sans;text-align:centre;border:2px solid grey;">REVIEWS</div>
-        {%for review in reviews%}
-        <div class="review-container" style="margin: 10px 5px 15px 20px;">
-            <div class="review-wraper">
-                {%if review[1]%}
-                <div class="rating-star" style="align-items: right;">
-
-                    <span class="fa fa-star review-checked " style="color:orange;"></span>
-                    <span style="font-weight:bold;">{{review[1]}}</span>
-                    <span class="point-scale">/10</span>
-                </div>
-                {%endif%}
-                {%if review[3]%}
-                <div class="review-title" style="align-items: center; font-weight:bold;">
-                    <span>{{review[3]}}</span>
-                </div>
-                {%endif%}
-
-                <div class="display-name" style="align-items: left; font-weight:bold;color:grey;">
-                    <span>by: {{review[2]}}</span>
-                </div>
-
-
-                <div class="content" style="text=align:left;">
-                    {%if review[5]=='1'%}
-                    <p style="color:green;">
-                        {{review[4]}}
-                    </p>
-                    {%elif review[5]=='0'%}
-                    <p style="color:red; ">
-                        {{review[4]}}
-                    </p>
+                    <button type="submit" class="btn btn-success">Search</button>
+                    {%if flag==-1%}
+                    <h4 style="color:red;">Not Found! <br> Try something else..</h4>
                     {%endif%}
-                </div>
+                </form>
             </div>
-        </div>
-        {%endfor%}
-    </div>
-    {%endif%}
+            <div class="">
+                {%if shape%}
+                <div class="search-id">
+                    <form action="{{ url_for('predict')}}" method="POST">
+                        <br/>
+                            <h3>Enter IMDB-ID from the table below <br> or click
+                                on title</h3>
+                            <input name="title-id" type="text"
+                                class="form-control" aria-label="Sizing example
+                                input" aria-describedby="inputGroup-sizing-lg"
+                                placeholder="Enter IMDB-ID">
+                            <br/>
+                                <button type="submit" class="btn btn-success">Search</button>
+                                <br>
+                            </form>
+                        </div>
+                        <div class="movie-table">
+                            <table>
+                                <tr>
+                                    <th>IMDB-ID</th>
+                                    <th>TITLE</th>
+                                    <th>YEAR of Release</th>
+                                </tr>
+                                {%for detail in details %}
+                                <tr>
+                                    <form action="{{ url_for('predict')}}"
+                                        method="POST">
+                                        <td>
+                                            <button class="btn" name="title-id"
+                                                type="submit"
+                                                value="{{detail[0]}}">{{detail[0]}}</button>
+                                        </td>
 
-    {%if flag==-3%}
-        <h3>No reviews to show!</h3>
-    {%endif%}
+                                        <td>
+                                            <button class="btn" name="title-id"
+                                                type="submit"
+                                                value="{{detail[0]}}">{{detail[1].swapcase()}}</button>
+                                        </td>
+                                        <td>{{detail[2]}}</td>
+
+                                    </form>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        {%endif%}
+                    </div>
+
+
+                    <div class="title-block">
+                        {%if flag==1 or flag==-3%}
+                        <div class="title-bar-wraper">
+                            <div class="rating-wraper">
+                                <div class="rating-star">
+                                    <span class="fa fa-star checked"></span>
+                                </div>
+                                <div class="ratingValue">
+                                    <strong title="{{movie[3]}} user ratings">
+                                        <span itemprop="ratingValue">{{movie[3]}}</span>
+                                    </strong>
+                                    <span class="grey">/</span>
+                                    <span class="grey" itemprop="bestRating">10</span>
+                                </div>
+                            </div>
+                            {%if prediction%}
+                            <div class="wrapper">
+                                <div class="sentiment">
+                                    {%if prediction<=4 %}
+                                    <i class='fas fa-frown-open'
+                                        style='font-size:48px;color: red;'></i>
+                                    {%elif prediction<=6 %}
+                                    <i class='fas fa-meh'
+                                        style='font-size:48px;color: orange;'></i>
+                                    {%else%}
+                                    <i class='fas fa-grin'
+                                        style='font-size:48px;color:green;'></i>
+                                    {%endif%}
+                                    <div>
+                                        <span class="sentiment-score"
+                                            style="font-weight:bold;">{{prediction}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endif%}
+
+
+                            <div class="title_wrapper">
+                                <h1 class="title">{{movie[0]}} </h1>
+
+                                <!-- <time datetime="PT110M">
+                                    {{movie[1]}}
+                                </time> -->
+                                <span class="ghost">|</span>
+                                {{movie[2]}}
+                                <span class="ghost">|</span>
+                                {{movie[1]}}
+                            </div>
+                        </div>
+                        <div style="height: 7px;display:
+                            block;background:grey;flex-direction: row">
+                            <hr>
+
+                        </div>
+
+                        <div class="poster">
+                            <a href={{movie[4]}} target="_blank">
+                                <img src={{movie[4]}}
+                                    style="height: 300px;border:1px solid grey;
+                                    margin: 2px 2px 2px 2px;padding:2px 2px 2px
+                                    2px;">
+                            </a>
+                        </div>
+                        {%endif%}
+                    </div>
 
 
 
-      <!-- Site footer -->
-    
+                    {%if reviews %}
+                    <div class="review-list" style="margin: 10px 20px 30px
+                        20px;border:5px solid #73AD51;padding:10px 20px 10px
+                        20px;">
+                        <div
+                            style="font-size:30px;font-weight:bold;font-family:sans;text-align:centre;border:2px
+                            solid grey;">REVIEWS</div>
+                        {%for review in reviews%}
+                        <div class="review-container" style="margin: 10px 5px
+                            15px 20px;">
+                            <div class="review-wraper">
+                                {%if review[1]%}
+                                <div class="rating-star" style="align-items:
+                                    right;">
+
+                                    <span class="fa fa-star review-checked"
+                                        style="color:orange;"></span>
+                                    <span style="font-weight:bold;">{{review[1]}}</span>
+                                    <span class="point-scale">/10</span>
+                                </div>
+                                {%endif%}
+                                {%if review[3]%}
+                                <div class="review-title" style="align-items:
+                                    center; font-weight:bold;">
+                                    <span>{{review[3]}}</span>
+                                </div>
+                                {%endif%}
+
+                                <div class="display-name" style="align-items:
+                                    left; font-weight:bold;color:grey;">
+                                    <span>by: {{review[2]}}</span>
+                                </div>
 
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    <script>
+                                <div class="content" style="text-align:left;">
+                                    {%if review[5]=='1'%}
+                                    <p style="color:green;">
+                                        {{review[4]}}
+                                    </p>
+                                    {%elif review[5]=='0'%}
+                                    <p style="color:red;">
+                                        {{review[4]}}
+                                    </p>
+                                    {%endif%}
+                                </div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                    {%endif%}
+
+                    {%if flag==-3%}
+                    <h3>No reviews to show!</h3>
+                    {%endif%}
+
+
+
+                    <!-- Site footer -->
+
+
+
+                    <!-- Optional JavaScript -->
+                    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+                    <script
+                        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                        crossorigin="anonymous"></script>
+                    <script
+                        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+                        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+                        crossorigin="anonymous"></script>
+                    <script
+                        src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+                        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+                        crossorigin="anonymous"></script>
+                    <script>
         function myFunction(r_id) {
           var dots = document.getElementById("dots");
           var moreText = document.getElementById("more");
@@ -250,7 +292,5 @@
           }
         }
     </script>
-
-
-</body>
-</html>
+                </body>
+            </html>
