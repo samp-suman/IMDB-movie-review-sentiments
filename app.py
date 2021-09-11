@@ -146,7 +146,7 @@ def getMovieDetails(imdb_id):
     except:
         genre = None
     try:
-        poster_link = "imdb.com/"+raw.find('a', class_="ipc-focusable")['href']
+        poster_link = "imdb.com"+raw.find('a', class_="ipc-focusable")['href']
     except:
         poster_link = None
     try:
